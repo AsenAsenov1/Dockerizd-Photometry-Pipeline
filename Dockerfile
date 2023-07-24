@@ -2,7 +2,8 @@ FROM ubuntu
 
 # Set environment variable to avoid user interaction during package installations
 ENV PHOTPIPEDIR=/home/photometrypipeline \
-    PATH=$PATH:/home/photometrypipeline/
+    PATH=$PATH:/home/photometrypipeline/ 
+    
 
 # Update the package lists and install necessary packages
 RUN apt-get update && apt-get install -y \
@@ -28,7 +29,7 @@ RUN apt-get update && apt-get install -y \
     pip \
     nano \
     libcfitsio-dev \
-    sextractor \
+    python3.10-venv \
     imagemagick 
 
 # Install sextractor
@@ -40,19 +41,26 @@ RUN cd /tmp && \
     make -j && \
     make install
 
+# Donwload Photometry Pipeline
+RUN cd /home && git clone https://github.com/AsenAsenov1/photometrypipeline.git
+
+# Import files - equirements.txt / server.py
 COPY requirements.txt /tmp/
 COPY server.py /home/
+COPY py_environment.sh /tmp
 
-RUN pip install -r /tmp/requirements.txt
+# Create Python virtual environment 
+RUN bash /tmp/py_environment.sh
 
-# Donload Photometry Pipeline
-RUN cd /home && git clone https://github.com/AsenAsenov1/photometrypipeline.git
+# Set aliases
+RUN echo >> "alias pact='source /home/pp_env/bin/activate'" /root/.bashrc
 
 # Expose port 9090 
 EXPOSE 9090
 
 # Start the Python HTTP server in the background
 CMD ["python3", "-m", "http.server", "9090"]
+
 
 
 
