@@ -44,7 +44,7 @@ RUN cd /tmp && \
 # Donwload Photometry Pipeline
 RUN cd /home && git clone https://github.com/AsenAsenov1/photometrypipeline.git
 
-# Import files - equirements.txt / server.py
+# Import files - requirements.txt / server.py / py_environment.sh
 COPY requirements.txt /tmp/
 COPY server.py /home/
 COPY py_environment.sh /tmp
@@ -53,7 +53,7 @@ COPY py_environment.sh /tmp
 RUN bash /tmp/py_environment.sh
 
 # Set aliases
-RUN echo >> "alias pact='source /home/pp_env/bin/activate'" /root/.bashrc
+RUN echo "alias pact='source /home/pp_env/bin/activate'" >> /root/.bashrc
 
 # Expose port 9090 
 EXPOSE 9090
